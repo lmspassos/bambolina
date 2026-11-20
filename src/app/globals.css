@@ -1,0 +1,697 @@
+@import "tailwindcss";
+
+/* Paleta oficial (TCC, pág. 52). Amarelo medido por pixel: #DDF230. */
+@theme inline {
+  --color-rosa: #ff1ec7;
+  --color-limao: #ddf230;
+  --color-laranja: #ff5938;
+  --color-azul: #1f6bed;
+  --color-vinho: #750015;
+  --color-creme: #f2f1e8;
+  --color-palco: #1d1d1b; /* fundo "palco" (de facto, não oficial) */
+  --font-sans: "Open Sauce One", system-ui, sans-serif;
+  --font-display: var(--font-montserrat), system-ui, sans-serif;
+  --font-swung: var(--font-swung-note), cursive; /* Swung Note: lettering expressivo */
+}
+
+html {
+  background: var(--color-palco);
+  color: var(--color-creme);
+}
+
+body {
+  font-family: var(--font-sans);
+  overflow-x: clip;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Recolor dos SVGs de marca (currentColor) via máscara */
+.mask-svg {
+  background-color: var(--c, currentColor);
+  mask: var(--src) center / contain no-repeat;
+  -webkit-mask: var(--src) center / contain no-repeat;
+}
+
+/* Cortina: dobras de tecido + bambolina (franja recortada no topo) */
+.cortina {
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.28) 0 3px,
+      transparent 3px 46px,
+      rgb(255 255 255 / 0.05) 46px 50px,
+      transparent 50px 92px
+    ),
+    var(--color-vinho);
+}
+.bambolina {
+  height: 4.5rem;
+  background:
+    radial-gradient(circle at 50% 0, var(--color-vinho) 0 48%, transparent 49%) 0 0 / 7rem 4.5rem repeat-x;
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.5));
+}
+.bambolina-base {
+  height: 1.5rem;
+  background: var(--color-vinho);
+}
+
+/* Grão sobre toda a página */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: none;
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* Brilho de ribalta nas bordas laterais */
+.ribalta {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  background:
+    radial-gradient(38vw 90vh at -8% 50%, rgb(255 30 199 / 0.4), transparent 70%),
+    radial-gradient(38vw 90vh at 108% 50%, rgb(255 89 56 / 0.4), transparent 70%);
+  animation: pulsa 6s ease-in-out infinite alternate;
+}
+@keyframes pulsa {
+  to {
+    opacity: 0.65;
+  }
+}
+
+/* Colunas laterais de formas, em loop */
+.coluna-track {
+  animation: sobe 48s linear infinite;
+}
+.coluna-track.reverso {
+  animation-direction: reverse;
+}
+@keyframes sobe {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+/* Quadro tipo planta de palco */
+.planta {
+  background-image:
+    linear-gradient(rgb(242 241 232 / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(242 241 232 / 0.07) 1px, transparent 1px);
+  background-size: 3.5rem 3.5rem;
+}
+
+/* Card em formato de ingresso: entalhes laterais */
+.ingresso {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  -webkit-mask:
+    radial-gradient(circle 0.6rem at 0 57%, #0000 96%, #000),
+    radial-gradient(circle 0.6rem at 100% 57%, #0000 96%, #000);
+  -webkit-mask-composite: source-in;
+  mask:
+    radial-gradient(circle 0.6rem at 0 57%, #0000 96%, #000),
+    radial-gradient(circle 0.6rem at 100% 57%, #0000 96%, #000);
+  mask-composite: intersect;
+}
+
+/* Roteiro (livro) */
+.pagina {
+  background-color: var(--color-creme);
+  background-image:
+    linear-gradient(rgb(31 107 237 / 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(31 107 237 / 0.16) 1px, transparent 1px);
+  background-size: 1.75rem 1.75rem;
+  color: var(--color-vinho);
+}
+.nota {
+  position: relative;
+  padding: 0.8rem 1rem 0.9rem;
+  box-shadow: 0 6px 14px rgb(0 0 0 / 0.25);
+  clip-path: polygon(0 3%, 6% 0, 14% 2%, 26% 0, 40% 2%, 55% 0, 70% 2%, 84% 0, 100% 3%, 98% 100%, 0 98%);
+}
+.nota::before {
+  content: "";
+  position: absolute;
+  top: -0.35rem;
+  left: 50%;
+  width: 3.2rem;
+  height: 1rem;
+  translate: -50% 0;
+  rotate: -4deg;
+  background: rgb(255 255 255 / 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cortina,
+  .bambolina,
+  .bambolina-base {
+    display: none;
+  }
+  .ribalta,
+  .coluna-track {
+    animation: none;
+  }
+}
+
+/* Backstage 3D no Hero: esconde as formas de fallback e garante leitura da logo/textos */
+[data-backstage="on"] [data-shapes] {
+  display: none;
+}
+[data-vinheta] {
+  background:
+    radial-gradient(48% 40% at 50% 41%, rgb(14 14 13 / 0.78), transparent 100%),
+    radial-gradient(75% 60% at 50% 45%, rgb(14 14 13 / 0.4), transparent 80%),
+    linear-gradient(to top, rgb(14 14 13 / 0.85), transparent 38%),
+    linear-gradient(to bottom, rgb(14 14 13 / 0.5), transparent 18%);
+}
+
+/* ===== Jornada pelo backstage (Hero fixo, 9 estações) ===== */
+[data-backstage="on"] [data-content],
+[data-backstage="on"] [data-apoio] {
+  opacity: var(--intro, 1);
+}
+[data-backstage="on"] [data-apoio] {
+  bottom: calc(5.4rem + 2svh);
+}
+[data-fase="jornada"] [data-apoio] {
+  visibility: hidden;
+  pointer-events: none;
+}
+[data-backstage="on"] [data-vinheta] {
+  opacity: calc(0.28 + 0.72 * var(--intro, 1));
+}
+[data-jornada] {
+  visibility: hidden;
+  opacity: 0;
+}
+[data-backstage="on"] [data-jornada] {
+  visibility: visible;
+  opacity: 1;
+}
+.jornada {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0 1rem 1rem;
+  pointer-events: none;
+}
+.jornada-legenda {
+  width: 100%;
+  max-width: 76rem;
+  display: flex;
+  justify-content: flex-start;
+}
+.jornada-card {
+  max-width: 27rem;
+  padding: 0.95rem 1.2rem 1.1rem;
+  border-left: 5px solid var(--cor);
+  border-radius: 0.3rem 1rem 1rem 0.3rem;
+  background: rgb(10 10 9 / 0.74);
+  backdrop-filter: blur(8px);
+  animation: jornadaEntra 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes jornadaEntra {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+.jornada-num {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(242 241 232 / 0.8);
+}
+.jornada-num span {
+  display: inline-block;
+  margin-right: 0.4rem;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  background: var(--cor);
+  color: var(--ink);
+}
+.jornada-titulo {
+  margin: 0.35rem 0 0.35rem;
+  font-family: var(--font-swung-note), cursive;
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  line-height: 1;
+  color: var(--color-creme);
+}
+.jornada-desc {
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgb(242 241 232 / 0.88);
+}
+.jornada-cta {
+  pointer-events: auto;
+  display: inline-block;
+  margin-top: 0.8rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  background: var(--color-limao);
+  color: var(--color-palco);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.jornada-cta:focus-visible,
+.jornada-ponto:focus-visible,
+.jornada-pular:focus-visible {
+  outline: 2px solid var(--color-limao);
+  outline-offset: 3px;
+}
+.jornada-dica-scroll {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.5rem;
+  display: none;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(242 241 232 / 0.75);
+  animation: jornadaPulso 2s ease-in-out infinite;
+}
+@keyframes jornadaPulso {
+  50% {
+    opacity: 0.45;
+    transform: translateY(3px);
+  }
+}
+.jornada-nav {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: rgb(10 10 9 / 0.66);
+  backdrop-filter: blur(8px);
+  max-width: 100%;
+}
+.jornada-ponto {
+  display: inline-flex;
+  align-items: center;
+  height: 1.7rem;
+  min-width: 1.7rem;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgb(242 241 232 / 0.12);
+  color: var(--color-creme);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s, padding 0.25s;
+}
+.jornada-ponto:hover,
+.jornada-ponto[data-hover] {
+  background: rgb(242 241 232 / 0.28);
+}
+.jornada-ponto[data-ativo] {
+  background: var(--cor);
+  color: var(--ink);
+}
+.jornada-inicio {
+  background: transparent;
+  font-size: 0.6rem;
+}
+.jornada-nome {
+  display: none;
+}
+.jornada-pular {
+  margin-left: 0.15rem;
+  padding: 0 0.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(242 241 232 / 0.8);
+  cursor: pointer;
+}
+.jornada-pular:hover {
+  color: var(--color-limao);
+}
+.jornada-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 4.4rem;
+  transform: translateX(-50%);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  background: rgb(242 241 232 / 0.92);
+  color: var(--color-palco);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+.jornada-estatica {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0.8rem;
+  z-index: 15;
+  padding: 0 1rem;
+}
+.jornada-estatica ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.jornada-estatica a {
+  display: block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgb(10 10 9 / 0.7);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--color-creme);
+}
+@media (min-width: 768px) {
+  .jornada {
+    padding: 0 5rem 1.4rem;
+  }
+  .jornada-ponto {
+    height: 2rem;
+    min-width: 2rem;
+    font-size: 0.78rem;
+  }
+  .jornada-ponto[data-ativo],
+  .jornada-ponto:hover {
+    padding: 0 0.85rem;
+  }
+  .jornada-ponto[data-ativo] .jornada-nome,
+  .jornada-ponto:hover .jornada-nome {
+    display: inline;
+    margin-left: 0.45rem;
+    font-weight: 700;
+  }
+  .jornada-dica-scroll {
+    display: block;
+  }
+  [data-backstage="on"] [data-apoio] {
+    bottom: calc(5.6rem + 2svh);
+  }
+}
+/* a legenda fica do lado oposto ao da estação, para não cobrir o cenário */
+.jornada-legenda[data-lado="-1"] {
+  justify-content: flex-end;
+}
+.jornada-legenda[data-lado="-1"] .jornada-card {
+  border-left: 0;
+  border-right: 5px solid var(--cor);
+  border-radius: 1rem 0.3rem 0.3rem 1rem;
+}
+@media (max-width: 767px) {
+  .jornada-legenda[data-lado="-1"] {
+    justify-content: flex-start;
+  }
+}
+.jornada-pular {
+  white-space: nowrap;
+}
+@media (max-width: 767px) {
+  .jornada-pular span {
+    display: none;
+  }
+}
+
+/* ===== FAQ: mural de abas ===== */
+.faq-quadro {
+  position: relative;
+  margin-top: 3.2rem;
+  padding: 3.6rem 1.1rem 3.2rem;
+  border: 14px solid #ddd7c2;
+  border-radius: 1rem;
+  background-color: var(--color-azul);
+  background-image:
+    repeating-linear-gradient(100deg, rgb(255 255 255 / 0.07) 0 3px, transparent 3px 27px),
+    repeating-linear-gradient(78deg, rgb(0 0 0 / 0.1) 0 2px, transparent 2px 21px),
+    radial-gradient(120% 90% at 50% 0, rgb(255 255 255 / 0.1), transparent 70%);
+  box-shadow: 0 30px 60px rgb(0 0 0 / 0.5), inset 0 0 50px rgb(0 0 0 / 0.4);
+}
+.faq-titulo {
+  position: relative;
+  width: fit-content;
+  max-width: 92%;
+  margin: -6.4rem auto 2.4rem;
+  padding: 1.1rem 2.4rem 1.7rem;
+  background: #e9dfc4;
+  background-image: repeating-linear-gradient(95deg, rgb(120 90 40 / 0.07) 0 2px, transparent 2px 11px);
+  color: var(--color-palco);
+  transform: rotate(-0.8deg);
+  clip-path: polygon(0 3%, 6% 0, 13% 4%, 22% 0, 31% 3%, 40% 0, 52% 4%, 63% 0, 74% 3%, 85% 0, 93% 4%, 100% 1%, 99% 52%, 100% 96%, 92% 100%, 83% 96%, 70% 100%, 58% 96%, 46% 100%, 34% 96%, 22% 100%, 11% 96%, 4% 100%, 0 95%, 1% 50%);
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.4));
+}
+.faq-titulo h3 {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(1.5rem, 3.6vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+}
+.faq-onda {
+  display: block;
+  width: 86%;
+  height: 0.9rem;
+  margin: 0.45rem auto 0;
+  fill: none;
+  stroke: var(--color-rosa);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+}
+.faq-grade {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.2rem 1.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+@media (min-width: 640px) {
+  .faq-grade {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1024px) {
+  .faq-grade {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.faq-card {
+  position: relative;
+  perspective: 1400px;
+  transform: rotate(var(--rot));
+}
+.faq-card[data-aberto] {
+  z-index: 3;
+}
+.faq-resposta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 14.5rem;
+  height: 100%;
+  padding: 1.4rem 1.2rem 2.4rem;
+  border: 1px solid rgb(0 0 0 / 0.18);
+  border-radius: 0.3rem;
+  background: var(--color-creme);
+  background-image: repeating-linear-gradient(0deg, transparent 0 25px, rgb(31 107 237 / 0.1) 25px 26px);
+  color: var(--color-palco);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.35);
+}
+.faq-resposta p {
+  font-size: 0.95rem;
+  line-height: 26px;
+}
+.faq-card:not([data-aberto]) .faq-resposta {
+  visibility: hidden;
+  transition: visibility 0s 0.6s;
+}
+.faq-fechar {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.5rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background: var(--color-palco);
+  color: var(--color-creme);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.faq-fechar:focus-visible,
+.faq-aba:focus-visible,
+.faq-todas:focus-visible {
+  outline: 3px solid var(--color-limao);
+  outline-offset: 3px;
+}
+/* a aba: dobradiça no topo; ao abrir, levanta em direção a quem olha e mostra o verso */
+.faq-aba {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+  transform-origin: 50% 0;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+.faq-card:not([data-aberto]) .faq-aba:hover {
+  transform: rotateX(9deg);
+}
+.faq-card[data-aberto] .faq-aba {
+  transform: rotateX(108deg);
+  pointer-events: none; /* a aba levantada não deve bloquear os cartões vizinhos; fechar é pelo botão do papel */
+}
+.faq-frente,
+.faq-verso {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.3rem;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.faq-frente {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.2rem 1.1rem 2.4rem;
+  border: 2px solid rgb(0 0 0 / 0.35);
+  background-color: var(--bg);
+  background-image:
+    repeating-linear-gradient(98deg, rgb(255 255 255 / 0.13) 0 2px, transparent 2px 12px),
+    repeating-linear-gradient(72deg, rgb(0 0 0 / 0.06) 0 2px, transparent 2px 17px);
+  color: var(--fg);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.4);
+}
+.faq-frente::before,
+.faq-frente::after {
+  content: "";
+  position: absolute;
+  top: -0.6rem;
+  width: 3.4rem;
+  height: 1.05rem;
+  background: rgb(236 224 190 / 0.88);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.3);
+}
+.faq-frente::before {
+  left: 10%;
+  transform: rotate(-3deg);
+}
+.faq-frente::after {
+  right: 10%;
+  transform: rotate(2deg);
+}
+.faq-pergunta {
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: clamp(1.05rem, 1.7vw, 1.3rem);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.faq-dica {
+  position: absolute;
+  left: 1.1rem;
+  bottom: 0.8rem;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  opacity: 0.8;
+}
+.faq-verso {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem;
+  transform: rotateX(180deg);
+  border: 2px solid rgb(0 0 0 / 0.35);
+  background: var(--color-vinho);
+  color: rgb(242 241 232 / 0.75);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+}
+.faq-todas {
+  position: absolute;
+  left: 50%;
+  bottom: -1.35rem;
+  transform: translateX(-50%);
+  padding: 0.45rem 1.3rem;
+  border: 2px solid rgb(0 0 0 / 0.45);
+  border-radius: 0.4rem;
+  background: var(--color-limao);
+  color: var(--color-palco);
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 0.85rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.faq-todas:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq-aba {
+    transition: none;
+  }
+  .faq-card[data-aberto] .faq-aba {
+    transform: none;
+    opacity: 0;
+  }
+  .faq-card:not([data-aberto]) .faq-resposta {
+    transition: none;
+  }
+}
+
+/* livro (Roteiro): fechado = clicável */
+[data-book] {
+  cursor: pointer;
+}
+[data-book]:focus-visible {
+  outline: 3px solid var(--color-limao);
+  outline-offset: 6px;
+  border-radius: 1rem;
+}
+
+/* Cortina de fechamento (fim da jornada 3D): com ela quase fechada, esconde a interface da jornada */
+section[data-fim] [data-jornada] {
+  visibility: hidden;
+}

@@ -1,0 +1,2 @@
+Texturas: Poly Haven (https://polyhaven.com), licença CC0 (domínio público).
+Originais 1k reduzidos para 512px: dark_brick_wall, black_painted_planks, plywood, velour_velvet, metal_plate.

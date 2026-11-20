@@ -1,0 +1,148 @@
+"use client";
+
+import { useState } from "react";
+import { HABILIDADES, type Habilidade } from "@/data/habilidades";
+
+const CORES = ["var(--color-limao)", "var(--color-rosa)", "var(--color-laranja)", "var(--color-azul)"];
+const on = "opacity-100 scale-100";
+const off = "opacity-0 scale-50";
+const anim = "transition duration-500 ease-out motion-reduce:transition-none";
+
+export default function Habilidades() {
+  const [marcadas, setMarcadas] = useState<Set<number>>(new Set());
+  const total = HABILIDADES.length;
+  const completo = marcadas.size === total;
+
+  const alterna = (i: number) =>
+    setMarcadas((prev) => {
+      const n = new Set(prev);
+      if (!n.delete(i)) n.add(i);
+      return n;
+    });
+
+  // Profissões ligadas às habilidades marcadas, sem repetir
+  const profissoes = [...new Set([...marcadas].sort((a, b) => a - b).flatMap((i) => HABILIDADES[i].profissoes))];
+  const temPeca = (p: Habilidade["peca"]) => HABILIDADES.some((h, i) => h.peca === p && marcadas.has(i));
+
+  return (
+    <section id="habilidades" className="relative px-4 py-24 sm:px-16 md:py-32">
+      <header className="mx-auto mb-14 max-w-3xl text-center">
+        <p className="font-display text-xs font-bold uppercase tracking-[0.35em] text-rosa">Teatro e futuro</p>
+        <h2 className="mt-3 font-display text-4xl font-extrabold leading-tight md:text-6xl">
+          O que você leva <span className="font-swung font-normal text-limao">dos bastidores?</span>
+        </h2>
+        <p className="mx-auto mt-5 max-w-xl text-lg text-creme/80">
+          Marque as habilidades que você já tem ou quer desenvolver e veja a cena se montar e onde elas aparecem, no teatro e fora dele.
+        </p>
+      </header>
+
+      <div className="mx-auto grid max-w-6xl items-start gap-8 md:grid-cols-[1.05fr_1fr]">
+        {/* Checklist (caderno) */}
+        <div className="pagina rounded-3xl p-6 shadow-2xl md:p-8">
+          <h3 className="font-swung text-3xl leading-none md:text-4xl">Minhas habilidades</h3>
+          <ul className="mt-5 divide-y divide-vinho/15">
+            {HABILIDADES.map((h, i) => {
+              const marcada = marcadas.has(i);
+              return (
+                <li key={h.nome}>
+                  <label className="flex cursor-pointer items-start gap-3 py-3">
+                    <input
+                      type="checkbox"
+                      checked={marcada}
+                      onChange={() => alterna(i)}
+                      className="peer sr-only"
+                    />
+                    <span
+                      aria-hidden
+                      className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-md border-2 border-vinho bg-creme text-limao transition peer-checked:bg-vinho peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-azul motion-reduce:transition-none"
+                    >
+                      <svg viewBox="0 0 20 20" className={`size-4 fill-none stroke-current stroke-[3] [stroke-linecap:round] [stroke-linejoin:round] transition ${marcada ? "scale-100 opacity-100" : "scale-0 opacity-0"}`}>
+                        <path d="M4 11l4 4 8-9" />
+                      </svg>
+                    </span>
+                    <span>
+                      <span className="block font-display text-base font-bold leading-tight">
+                        {h.nome}
+                      </span>
+                      <span className="mt-0.5 block text-[0.78rem] text-vinho/70">{h.areas.join(" · ")}</span>
+                    </span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="mt-5 flex items-center justify-between gap-4 border-t border-dashed border-vinho/40 pt-4">
+            <p aria-live="polite" className="font-display text-sm font-bold">
+              {marcadas.size} de {total} marcadas
+            </p>
+            <button
+              type="button"
+              onClick={() => setMarcadas(new Set())}
+              className="rounded-full border-2 border-vinho px-4 py-1 font-display text-xs font-bold transition hover:bg-vinho hover:text-creme focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul"
+            >
+              recomeçar
+            </button>
+          </div>
+        </div>
+
+        {/* Cena que se monta + profissões */}
+        <div className="grid gap-6">
+          <div aria-hidden className="relative aspect-[4/3] overflow-hidden rounded-3xl border-4 border-vinho bg-palco shadow-2xl">
+            <div className={`absolute inset-x-0 bottom-0 h-[26%] bg-laranja [clip-path:polygon(8%_0,92%_0,100%_100%,0_100%)] origin-bottom ${anim} ${temPeca("piso") ? on : off}`} />
+            <div className={`absolute left-1/2 top-0 h-[80%] w-[48%] -translate-x-1/2 bg-limao/80 [clip-path:polygon(43%_0,57%_0,100%_100%,0_100%)] origin-top ${anim} ${temPeca("feixe") ? on : off}`} />
+            <Forma nome="direcao" cor="var(--color-rosa)" className={`bottom-[18%] left-1/2 w-[22%] -translate-x-1/2 ${anim} ${temPeca("personagem") ? on : off}`} />
+            <Forma nome="cenografia" cor="var(--color-azul)" className={`right-[16%] top-[10%] w-[16%] ${anim} ${temPeca("lua") ? on : off}`} />
+            <Forma nome="iluminacao" cor="var(--color-rosa)" className={`left-[22%] top-[12%] w-[18%] ${anim} ${temPeca("arco") ? on : off}`} />
+            <Forma nome="sonoplastia" cor="var(--color-creme)" className={`bottom-[32%] right-[24%] w-[14%] ${anim} ${temPeca("som") ? on : off}`} />
+            <div className={`cortina absolute left-0 top-0 h-full w-[20%] origin-left [clip-path:polygon(0_0,100%_0,68%_100%,0_100%)] ${anim} ${temPeca("cortinaEsq") ? on : off}`} />
+            <div className={`cortina absolute right-0 top-0 h-full w-[20%] origin-right [clip-path:polygon(0_0,100%_0,100%_100%,32%_100%)] ${anim} ${temPeca("cortinaDir") ? on : off}`} />
+            {marcadas.size === 0 && (
+              <p className="absolute inset-0 grid place-items-center px-8 text-center font-swung text-2xl text-creme/50">
+                O palco está vazio. Marque uma habilidade.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-creme/60">Onde isso aparece</p>
+            <ul className="mt-3 flex min-h-12 flex-wrap gap-2">
+              {profissoes.length === 0 && <li className="text-creme/50">As profissões ligadas às suas habilidades aparecem aqui.</li>}
+              {profissoes.map((p, i) => (
+                <li
+                  key={p}
+                  className="rounded-full px-3.5 py-1.5 font-display text-sm font-bold text-palco"
+                  style={{ background: CORES[i % CORES.length] }}
+                >
+                  {p}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {completo && (
+            <div className="rounded-2xl bg-limao p-5 text-palco">
+              <p className="font-swung text-2xl leading-tight">Nenhum espetáculo acontece sozinho.</p>
+              <p className="mt-1 text-sm">Cada pessoa contribui de um jeito, e o resultado depende de todos os talentos juntos.</p>
+              <a href="#contato" className="mt-3 inline-block rounded-full bg-palco px-5 py-2 font-display text-sm font-bold text-limao transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-palco">
+                Leve essa experiência para sua escola
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-creme/60">
+        A Bambolina não faz teste vocacional nem garante aptidão para uma carreira. A proposta é mostrar conexões, ampliar referências e incentivar jovens a explorar possibilidades.
+      </p>
+    </section>
+  );
+}
+
+function Forma({ nome, cor, className }: { nome: string; cor: string; className: string }) {
+  return (
+    <div
+      className={`mask-svg absolute aspect-square ${className}`}
+      style={{ "--c": cor, "--src": `url(/brand/elementos/elemento-${nome}.svg)` } as React.CSSProperties}
+    />
+  );
+}
