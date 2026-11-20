@@ -18,16 +18,9 @@ const CORES = [
 const ROT = [-1.1, 0.8, -0.6, 1.0, -0.9, 0.7, -0.5, 1.1, -0.8];
 
 export default function FaqMural({ itens }: { itens: [string, string][] }) {
-  const [abertas, setAbertas] = useState<Set<number>>(new Set());
+  const [aberta, setAberta] = useState<number | null>(null); // só uma pergunta aberta por vez
   const id = useId();
-  const alternar = (i: number) =>
-    setAbertas((prev) => {
-      const n = new Set(prev);
-      if (n.has(i)) n.delete(i);
-      else n.add(i);
-      return n;
-    });
-  const todas = abertas.size === itens.length;
+  const alternar = (i: number) => setAberta((a) => (a === i ? null : i));
 
   return (
     <div className="faq-quadro">
@@ -41,12 +34,13 @@ export default function FaqMural({ itens }: { itens: [string, string][] }) {
       <ul className="faq-grade">
         {itens.map(([q, a], i) => {
           const cor = CORES[i % CORES.length];
-          const aberto = abertas.has(i);
+          const aberto = aberta === i;
           return (
             <li
               key={q}
               className="faq-card"
               data-aberto={aberto || undefined}
+              onClick={aberto ? (e) => !(e.target as Element).closest("button") && alternar(i) : undefined} // clicar no papel aberto também fecha
               style={{ "--bg": cor.bg, "--fg": cor.fg, "--rot": `${ROT[i % ROT.length]}deg` } as React.CSSProperties}
             >
               <div id={`${id}-r${i}`} role="region" aria-labelledby={`${id}-b${i}`} className="faq-resposta">
@@ -77,14 +71,6 @@ export default function FaqMural({ itens }: { itens: [string, string][] }) {
           );
         })}
       </ul>
-
-      <button
-        type="button"
-        className="faq-todas"
-        onClick={() => setAbertas(todas ? new Set() : new Set(itens.map((_, i) => i)))}
-      >
-        {todas ? "fechar todas" : "pode abrir"}
-      </button>
     </div>
   );
 }

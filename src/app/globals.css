@@ -579,7 +579,6 @@ body::after {
 }
 .faq-card[data-aberto] .faq-aba {
   transform: rotateX(108deg);
-  pointer-events: none; /* a aba levantada não deve bloquear os cartões vizinhos; fechar é pelo botão do papel */
 }
 .faq-frente,
 .faq-verso {

@@ -85,7 +85,7 @@ Obs.: testes independentes mostram economia real de ~10–26% de custo (não os 
 
 ## Atualizações de UI (20/11/2026)
 
-- **FAQ = mural de abas** (`FaqMural.tsx` + bloco "FAQ: mural de abas" no globals.css; referência: jogo "abra os bastidores"): 9 cartões; cada aba é um `<button aria-expanded>` com dobradiça no topo (`rotateX(108deg)`, verso vinho); a resposta fica `visibility:hidden` enquanto coberta; aba levantada tem `pointer-events:none` (fecha pelo botão "baixar aba" ou por "pode abrir/fechar todas"). Movimento reduzido: a aba some em vez de girar.
+- **FAQ = mural de abas** (`FaqMural.tsx` + bloco "FAQ: mural de abas" no globals.css; referência: jogo "abra os bastidores"): 9 cartões; cada aba é um `<button aria-expanded>` com dobradiça no topo (`rotateX(108deg)`, verso vinho); a resposta fica `visibility:hidden` enquanto coberta; só UMA aberta por vez (estado `aberta: number|null`); fecha clicando na aba levantada, no papel ou em "baixar aba". Movimento reduzido: a aba some em vez de girar.
 - **Âncoras animadas:** `SmoothScroll.tsx` intercepta qualquer `a[href^="#"]` (menu, CTA, "pular") e rola com Lenis (duração 0,9–2,8 s conforme a distância), atualiza o hash e foca a seção. Sem Lenis (movimento reduzido) vale o salto nativo.
 - **Doodles do menu** aparecem ABAIXO do link (acima eram cortados pela borda da tela).
 - Recarregar a página sempre começa no topo (`scrollRestoration = "manual"` em `SmoothScroll.tsx`), a menos que a URL tenha `#âncora`.
