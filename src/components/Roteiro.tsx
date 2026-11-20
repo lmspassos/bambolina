@@ -119,12 +119,26 @@ export default function Roteiro() {
 
           {/* Capa: frente vinho, verso = página esquerda */}
           <div data-cover className="absolute right-0 top-0 h-full w-1/2 origin-left [transform-style:preserve-3d]">
-            <div className="cortina absolute inset-0 grid place-content-center justify-items-center gap-[6%] rounded-r-2xl p-[8%] shadow-2xl [backface-visibility:hidden]">
-              {/* eslint-disable-next-line @next/next/no-img-element -- SVG vetorial da marca */}
-              <img src="/brand/logo/reduzida-rosa.svg" alt="Bambolina" className="w-[85%]" />
-              <p className="font-display text-sm motion-reduce:text-[clamp(0.55rem,1.3vw,0.9rem)] md:text-[clamp(0.55rem,1.3vw,0.9rem)] font-bold uppercase tracking-[0.3em] text-creme">
-                Roteiro
+            {/* Arte da capa (manual do TCC): formas oficiais espalhadas, selo rosa e logo no lugar do "what is BAMBOLINA?" */}
+            <div className="@container absolute inset-0 overflow-hidden rounded-r-2xl bg-palco shadow-2xl [backface-visibility:hidden]">
+              {CAPA.map((f) => (
+                <div
+                  key={f.nome}
+                  aria-hidden
+                  className="mask-svg absolute aspect-square"
+                  style={{
+                    left: `${f.x}%`, top: `${f.y}%`, width: `${f.w}%`, rotate: `${f.r}deg`,
+                    background: f.bg,
+                    "--src": `url(/brand/elementos/elemento-${f.nome}.svg)`,
+                  } as React.CSSProperties}
+                />
+              ))}
+              <p className="absolute left-[43.5%] top-[17.5%] w-[48.5%] bg-rosa py-[1.6cqw] text-center font-display text-[3.2cqw] font-semibold italic text-palco">
+                um palco de possibilidades.
               </p>
+              {/* eslint-disable-next-line @next/next/no-img-element -- SVG vetorial da marca */}
+              <img src="/brand/logo/reduzida-rosa.svg" alt="Bambolina" className="absolute left-[10%] top-[78.5%] w-[52%]" />
+              <span className="sr-only">Roteiro</span>
             </div>
             <div className="pagina absolute inset-0 grid place-content-center rounded-l-2xl p-[8%] shadow-2xl [backface-visibility:hidden] [transform:rotateY(180deg)]">
               <p className="font-swung text-[1.9rem] motion-reduce:text-[clamp(1.1rem,3.2vw,2.6rem)] md:text-[clamp(1.1rem,3.2vw,2.6rem)] leading-tight">
@@ -140,6 +154,15 @@ export default function Roteiro() {
     </section>
   );
 }
+
+// Posição (% da capa), largura e giro de cada forma, tirados da arte do manual. Todas são formas oficiais.
+const CAPA = [
+  { nome: "sonoplastia", x: 7.9, y: 14, w: 29, r: 10, bg: "var(--color-laranja)" },
+  { nome: "direcao", x: 33, y: 33.5, w: 32, r: -22, bg: "var(--color-azul)" },
+  { nome: "cenografia", x: 71.5, y: 32.5, w: 24, r: 0, bg: "linear-gradient(90deg, var(--color-limao) 45%, var(--color-creme))" },
+  { nome: "iluminacao", x: 8, y: 54.5, w: 30, r: 22, bg: "var(--color-limao)" },
+  { nome: "contrarregragem", x: 66, y: 60, w: 28, r: 10, bg: "linear-gradient(90deg, var(--color-rosa) 50%, var(--color-creme))" },
+] as const;
 
 function Nota({
   children,
