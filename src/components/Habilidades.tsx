@@ -1,12 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { HABILIDADES, type Habilidade } from "@/data/habilidades";
+import { HABILIDADES } from "@/data/habilidades";
+import Cracha from "./cracha/Cracha";
 
 const CORES = ["var(--color-limao)", "var(--color-rosa)", "var(--color-laranja)", "var(--color-azul)"];
-const on = "opacity-100 scale-100";
-const off = "opacity-0 scale-50";
-const anim = "transition duration-500 ease-out motion-reduce:transition-none";
 
 export default function Habilidades() {
   const [marcadas, setMarcadas] = useState<Set<number>>(new Set());
@@ -22,7 +20,6 @@ export default function Habilidades() {
 
   // Profissões ligadas às habilidades marcadas, sem repetir
   const profissoes = [...new Set([...marcadas].sort((a, b) => a - b).flatMap((i) => HABILIDADES[i].profissoes))];
-  const temPeca = (p: Habilidade["peca"]) => HABILIDADES.some((h, i) => h.peca === p && marcadas.has(i));
 
   return (
     <section id="habilidades" className="relative px-4 py-16 sm:px-16 md:py-24">
@@ -32,7 +29,7 @@ export default function Habilidades() {
           O que você leva <span className="font-swung font-normal text-limao">dos bastidores?</span>
         </h2>
         <p className="mx-auto mt-5 max-w-xl text-lg text-creme/80">
-          Marque as habilidades que você já tem ou quer desenvolver e veja a cena se montar e onde elas aparecem, no teatro e fora dele.
+          Marque as habilidades que você já tem ou quer desenvolver, pendure o crachá e veja onde elas aparecem, no teatro e fora dele.
         </p>
       </header>
 
@@ -87,21 +84,7 @@ export default function Habilidades() {
 
         {/* Cena que se monta + profissões */}
         <div className="grid gap-6">
-          <div aria-hidden className="relative aspect-[4/3] overflow-hidden rounded-3xl border-4 border-vinho bg-palco shadow-2xl">
-            <div className={`absolute inset-x-0 bottom-0 h-[26%] bg-laranja [clip-path:polygon(8%_0,92%_0,100%_100%,0_100%)] origin-bottom ${anim} ${temPeca("piso") ? on : off}`} />
-            <div className={`absolute left-1/2 top-0 h-[80%] w-[48%] -translate-x-1/2 bg-limao/80 [clip-path:polygon(43%_0,57%_0,100%_100%,0_100%)] origin-top ${anim} ${temPeca("feixe") ? on : off}`} />
-            <Forma nome="direcao" cor="var(--color-rosa)" className={`bottom-[18%] left-1/2 w-[22%] -translate-x-1/2 ${anim} ${temPeca("personagem") ? on : off}`} />
-            <Forma nome="cenografia" cor="var(--color-azul)" className={`right-[16%] top-[10%] w-[16%] ${anim} ${temPeca("lua") ? on : off}`} />
-            <Forma nome="iluminacao" cor="var(--color-rosa)" className={`left-[22%] top-[12%] w-[18%] ${anim} ${temPeca("arco") ? on : off}`} />
-            <Forma nome="sonoplastia" cor="var(--color-creme)" className={`bottom-[32%] right-[24%] w-[14%] ${anim} ${temPeca("som") ? on : off}`} />
-            <div className={`cortina absolute left-0 top-0 h-full w-[20%] origin-left [clip-path:polygon(0_0,100%_0,68%_100%,0_100%)] ${anim} ${temPeca("cortinaEsq") ? on : off}`} />
-            <div className={`cortina absolute right-0 top-0 h-full w-[20%] origin-right [clip-path:polygon(0_0,100%_0,100%_100%,32%_100%)] ${anim} ${temPeca("cortinaDir") ? on : off}`} />
-            {marcadas.size === 0 && (
-              <p className="absolute inset-0 grid place-items-center px-8 text-center font-swung text-2xl text-creme/50">
-                O palco está vazio. Marque uma habilidade.
-              </p>
-            )}
-          </div>
+          <Cracha marcadas={HABILIDADES.map((_, i) => marcadas.has(i))} />
 
           <div>
             <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-creme/60">Onde isso aparece</p>
@@ -135,14 +118,5 @@ export default function Habilidades() {
         A Bambolina não faz teste vocacional nem garante aptidão para uma carreira. A proposta é mostrar conexões, ampliar referências e incentivar jovens a explorar possibilidades.
       </p>
     </section>
-  );
-}
-
-function Forma({ nome, cor, className }: { nome: string; cor: string; className: string }) {
-  return (
-    <div
-      className={`mask-svg absolute aspect-square ${className}`}
-      style={{ "--c": cor, "--src": `url(/brand/elementos/elemento-${nome}.svg)` } as React.CSSProperties}
-    />
   );
 }

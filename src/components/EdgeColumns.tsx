@@ -1,9 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { AREAS } from "@/data/areas";
 
-const SHAPES = ["iluminacao", "cenografia", "direcao", "sonoplastia", "contrarregragem"];
+// Cada forma representa UMA área da marca (docs/02, seção 5); o rótulo do hover é sempre o nome da própria forma.
+const NOME = {
+  iluminacao: "Iluminação",
+  cenografia: "Cenografia",
+  direcao: "Direção",
+  sonoplastia: "Sonoplastia",
+  contrarregragem: "Contrarregragem",
+} as const;
+type Forma = keyof typeof NOME;
+const SHAPES = Object.keys(NOME) as Forma[];
 // [fundo, forma]
 const PAIRS = [
   ["var(--color-rosa)", "var(--color-palco)"],
@@ -25,7 +33,7 @@ const ROTULO = [
 
 type Rotulo = { texto: string; bg: string; fg: string; lado: "left" | "right" };
 
-function Tiles({ offset, lado, aoEntrar }: { offset: number; lado: "left" | "right"; aoEntrar: (el: HTMLElement, lado: "left" | "right") => void }) {
+function Tiles({ offset, lado, aoEntrar }: { offset: number; lado: "left" | "right"; aoEntrar: (el: HTMLElement, lado: "left" | "right", forma: Forma) => void }) {
   return (
     <>
       {Array.from({ length: 12 }, (_, i) => {
@@ -36,7 +44,7 @@ function Tiles({ offset, lado, aoEntrar }: { offset: number; lado: "left" | "rig
             key={i}
             className="pointer-events-auto aspect-square shrink-0 rounded-lg p-2"
             style={{ background: bg }}
-            onPointerEnter={(e) => e.pointerType === "mouse" && aoEntrar(e.currentTarget, lado)}
+            onPointerEnter={(e) => e.pointerType === "mouse" && aoEntrar(e.currentTarget, lado, shape)}
           >
             <div
               className="mask-svg size-full"
@@ -49,7 +57,7 @@ function Tiles({ offset, lado, aoEntrar }: { offset: number; lado: "left" | "rig
   );
 }
 
-function Coluna({ side, offset, aoEntrar, aoSair }: { side: "left" | "right"; offset: number; aoEntrar: (el: HTMLElement, lado: "left" | "right") => void; aoSair: () => void }) {
+function Coluna({ side, offset, aoEntrar, aoSair }: { side: "left" | "right"; offset: number; aoEntrar: (el: HTMLElement, lado: "left" | "right", forma: Forma) => void; aoSair: () => void }) {
   return (
     <div
       aria-hidden
@@ -70,23 +78,6 @@ export default function EdgeColumns() {
   const box = useRef<HTMLDivElement>(null);
   const raf = useRef(0);
   const tile = useRef<HTMLElement | null>(null);
-  const sacola = useRef<string[]>([]); // nomes ainda não sorteados nesta rodada
-  const ultimo = useRef("");
-
-  // Sorteio sem repetir: só recomeça quando todas as 9 áreas já apareceram (e a nova rodada não abre com a última).
-  const proximoNome = () => {
-    if (sacola.current.length === 0) {
-      const nomes = AREAS.map((a) => a.area);
-      for (let i = nomes.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [nomes[i], nomes[j]] = [nomes[j], nomes[i]];
-      }
-      if (nomes[nomes.length - 1] === ultimo.current) nomes.unshift(nomes.pop()!); // o fim da lista sai primeiro
-      sacola.current = nomes;
-    }
-    ultimo.current = sacola.current.pop()!;
-    return ultimo.current;
-  };
 
   // O rótulo acompanha o quadrado enquanto ele sobe/desce sob o cursor.
   const seguir = () => {
@@ -101,9 +92,9 @@ export default function EdgeColumns() {
   };
   useEffect(() => () => cancelAnimationFrame(raf.current), []);
 
-  const aoEntrar = (el: HTMLElement, lado: "left" | "right") => {
+  const aoEntrar = (el: HTMLElement, lado: "left" | "right", forma: Forma) => {
     const [bg, fg] = ROTULO[Math.floor(Math.random() * ROTULO.length)];
-    const texto = proximoNome();
+    const texto = NOME[forma];
     tile.current = el;
     setRotulo({ texto, bg, fg, lado });
     setVisivel(true);
