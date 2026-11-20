@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 
 /**
  * FAQ em forma de mural de abas (referência: jogo "abra os bastidores"):
@@ -21,6 +21,14 @@ export default function FaqMural({ itens }: { itens: [string, string][] }) {
   const [aberta, setAberta] = useState<number | null>(null); // só uma pergunta aberta por vez
   const id = useId();
   const alternar = (i: number) => setAberta((a) => (a === i ? null : i));
+  const trilho = useRef<HTMLUListElement>(null);
+  const rolar = (dir: 1 | -1) => {
+    const t = trilho.current;
+    if (!t) return;
+    const card = t.querySelector("li");
+    const passo = (card?.getBoundingClientRect().width ?? 280) + 24;
+    t.scrollBy({ left: dir * passo, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  };
 
   return (
     <div className="faq-quadro">
@@ -31,7 +39,7 @@ export default function FaqMural({ itens }: { itens: [string, string][] }) {
         </svg>
       </div>
 
-      <ul className="faq-grade">
+      <ul className="faq-grade" ref={trilho} aria-label="Perguntas frequentes (deslize para o lado)">
         {itens.map(([q, a], i) => {
           const cor = CORES[i % CORES.length];
           const aberto = aberta === i;
@@ -71,6 +79,16 @@ export default function FaqMural({ itens }: { itens: [string, string][] }) {
           );
         })}
       </ul>
+
+      <div className="faq-setas">
+        <button type="button" onClick={() => rolar(-1)} aria-label="Perguntas anteriores">
+          ←
+        </button>
+        <span aria-hidden>deslize para o lado</span>
+        <button type="button" onClick={() => rolar(1)} aria-label="Próximas perguntas">
+          →
+        </button>
+      </div>
     </div>
   );
 }

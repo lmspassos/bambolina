@@ -4,7 +4,27 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 /** Ponte entre o scroll suave (Lenis), o pin do Hero e a interface da jornada. */
 export const lenisRef: { current: Lenis | null } = { current: null };
 /** `passos` = nº de estações; `total` = passos + trecho final em que a cortina se fecha. */
-export const jornada: { st: ScrollTrigger | null; passos: number; total: number; navegando: boolean } = { st: null, passos: 9, total: 9, navegando: false };
+export const jornada: { st: ScrollTrigger | null; passos: number; total: number; navegando: boolean; congelada: boolean } = { st: null, passos: 9, total: 9, navegando: false, congelada: false };
+
+/**
+ * Congela a experiência 3D: o pin do Hero some (fica 1px), então o scroll desce da logo direto à próxima seção.
+ * Descongelar devolve a jornada. A escolha fica guardada no navegador.
+ */
+export function congelar(on: boolean, persistir = true) {
+  jornada.congelada = on;
+  if (persistir) {
+    try {
+      localStorage.setItem("bambolina:congelada", on ? "1" : "0");
+    } catch {}
+  }
+  if (on && window.scrollY > 0) {
+    // a câmera volta à vista da logo; o pin encolhe e a página sobe com ele
+    if (lenisRef.current) lenisRef.current.scrollTo(0, { immediate: true, force: true });
+    else window.scrollTo(0, 0);
+  }
+  window.dispatchEvent(new CustomEvent("bambolina:congelada", { detail: on }));
+  ScrollTrigger.refresh();
+}
 
 /**
  * Rolagem programática suave (menu, "pular", abrir o livro, estações). Enquanto dura, `jornada.navegando`

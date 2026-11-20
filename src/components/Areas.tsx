@@ -100,8 +100,8 @@ export default function Areas() {
   }, []);
 
   return (
-    <section ref={root} id="areas" className="relative px-4 py-24 sm:px-16 md:py-32">
-      <header className="mx-auto mb-14 max-w-3xl text-center">
+    <section ref={root} id="areas" className="relative px-4 py-16 sm:px-16 md:py-24">
+      <header className="mx-auto mb-10 max-w-3xl md:mb-14 text-center">
         <p className="font-display text-xs font-bold uppercase tracking-[0.35em] text-rosa">As estações</p>
         <h2 className="mt-3 font-display text-4xl font-extrabold leading-tight md:text-6xl">
           Nove áreas. <span className="font-swung font-normal text-limao">Uma história só.</span>
@@ -121,7 +121,7 @@ export default function Areas() {
           className="planta relative rounded-3xl border border-creme/15 bg-palco p-4 md:h-[72rem] md:overflow-hidden md:p-0"
         >
           <Eixos />
-          <ul className="grid grid-cols-2 gap-4 md:block">
+          <ul className="grid auto-rows-fr grid-cols-2 gap-4 md:block">
             {AREAS.map((a, i) => (
               <li
                 key={a.area}
@@ -131,7 +131,7 @@ export default function Areas() {
               >
                 <article
                   data-drag
-                  className="ingresso select-none bg-creme text-vinho shadow-xl md:cursor-grab md:active:cursor-grabbing"
+                  className="ingresso h-full select-none bg-creme md:h-auto text-vinho shadow-xl md:cursor-grab md:active:cursor-grabbing"
                 >
                   <div className="relative grid aspect-[16/10] place-items-center" style={{ background: a.bg }}>
                     <div

@@ -6,11 +6,11 @@ export const CONTATO = {
   whatsapp: null as string | null, // somente dígitos com DDI, ex.: "5541999999999"
   whatsappExibicao: null as string | null, // ex.: "(41) 99999-9999"
   site: null as string | null, // ex.: "https://..."
-  instagram: null as string | null, // o docx cita "@bambolina", mas NÃO foi confirmado que o perfil é da marca
+  instagram: "@bambolina" as string | null, // conforme o catálogo (docx)
 };
 
-// Preço: R$ 3.500,00 é só a referência do planejamento. Marcar como validado quando for oficial.
-export const PRECO = { valor: "R$ 3.500,00", validado: false };
+// Preço oficial da proposta: R$ 3.500,00 (catálogo).
+export const PRECO = { valor: "R$ 3.500,00" };
 
 export const CONDICOES = {
   cancelamento: null as string | null, // política de cancelamento e remarcação

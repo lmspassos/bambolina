@@ -25,8 +25,8 @@ export default function Habilidades() {
   const temPeca = (p: Habilidade["peca"]) => HABILIDADES.some((h, i) => h.peca === p && marcadas.has(i));
 
   return (
-    <section id="habilidades" className="relative px-4 py-24 sm:px-16 md:py-32">
-      <header className="mx-auto mb-14 max-w-3xl text-center">
+    <section id="habilidades" className="relative px-4 py-16 sm:px-16 md:py-24">
+      <header className="mx-auto mb-10 max-w-3xl md:mb-14 text-center">
         <p className="font-display text-xs font-bold uppercase tracking-[0.35em] text-rosa">Teatro e futuro</p>
         <h2 className="mt-3 font-display text-4xl font-extrabold leading-tight md:text-6xl">
           O que você leva <span className="font-swung font-normal text-limao">dos bastidores?</span>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { AREAS } from "@/data/areas";
-import { irParaPasso, jornada, pularJornada } from "@/lib/jornada";
+import { congelar, irParaPasso, jornada, pularJornada } from "@/lib/jornada";
 import { LADO } from "./backstage/geometria";
 
 const MQ = "(prefers-reduced-motion: reduce)";
@@ -20,17 +20,24 @@ export default function HeroJornada() {
   const [passo, setPasso] = useState(0);
   const [hover, setHover] = useState<number | null>(null);
   const [fim, setFim] = useState(false); // cortina fechando, depois da estação 9
+  const [congelada, setCongelada] = useState(false);
   const reduzido = useSyncExternalStore(assinarMovimento, () => matchMedia(MQ).matches, () => false);
 
   useEffect(() => {
     const p = (e: Event) => setPasso((e as CustomEvent<number>).detail);
     const h = (e: Event) => setHover((e as CustomEvent<number | null>).detail);
     const f = (e: Event) => setFim((e as CustomEvent<boolean>).detail);
+    const c = (e: Event) => setCongelada((e as CustomEvent<boolean>).detail);
+    window.addEventListener("bambolina:congelada", c);
+    try {
+      if (localStorage.getItem("bambolina:congelada") === "1") congelar(true, false);
+    } catch {}
     window.addEventListener("bambolina:passo", p);
     window.addEventListener("bambolina:hover", h);
     window.addEventListener("bambolina:fecha", f);
     return () => {
       window.removeEventListener("bambolina:fecha", f);
+      window.removeEventListener("bambolina:congelada", c);
       window.removeEventListener("bambolina:passo", p);
       window.removeEventListener("bambolina:hover", h);
     };
@@ -72,7 +79,7 @@ export default function HeroJornada() {
           </div>
         )}
       </div>
-      {!atual && !fim && (
+      {!atual && !fim && !congelada && (
         <p className="jornada-dica-scroll">
           <span aria-hidden>↓</span> Role para atravessar os bastidores
         </p>
@@ -80,6 +87,7 @@ export default function HeroJornada() {
 
       {/* navegação pelas 9 áreas */}
       <nav aria-label="Estações do backstage" className="jornada-nav">
+        {!congelada && (<>
         <button type="button" className="jornada-ponto jornada-inicio" aria-label="Voltar ao início do backstage" aria-current={passo === 0 && !fim} onClick={() => irParaPasso(0)}>
           <span aria-hidden>●</span>
         </button>
@@ -105,6 +113,22 @@ export default function HeroJornada() {
         </button>
         <button type="button" className="jornada-pular" onClick={pularJornada}>
           Pular <span aria-hidden>↓</span>
+        </button>
+        </>)}
+        <button
+          type="button"
+          className="jornada-trava"
+          aria-pressed={congelada}
+          aria-label={congelada ? "Descongelar a experiência 3D" : "Congelar a experiência 3D: a rolagem vai direto ao conteúdo"}
+          title={congelada ? "Descongelar a experiência" : "Congelar a experiência (rolar direto ao conteúdo)"}
+          onClick={() => congelar(!congelada)}
+        >
+          <svg aria-hidden viewBox="0 0 24 24" className="jornada-cadeado">
+            <rect x="5" y="11" width="14" height="10" rx="2.5" />
+            <path d={congelada ? "M8 11V8a4 4 0 0 1 8 0v3" : "M8 11V8a4 4 0 0 1 7.5-2"} />
+            <path d="M12 15.5v2" />
+          </svg>
+          {congelada && <span>Descongelar</span>}
         </button>
       </nav>
 

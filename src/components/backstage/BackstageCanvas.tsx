@@ -101,14 +101,15 @@ export default function BackstageCanvas() {
       const st = ScrollTrigger.create({
         trigger: secao,
         start: "top top",
-        end: () => "+=" + Math.round(window.innerHeight * 0.85 * TOTAL),
+        end: () => (jornada.congelada ? "+=1" : "+=" + Math.round(window.innerHeight * 0.85 * TOTAL)),
         pin: true,
         pinSpacing: true,
         anticipatePin: 1,
         invalidateOnRefresh: true,
         refreshPriority: 10, // o pin do Hero deve ser medido antes dos pins das seções seguintes (ex.: livro do Roteiro)
         onUpdate: (s) => {
-          const pt = s.progress * TOTAL;
+          // Congelada: o pin tem 1px, então "progresso" salta a 1 ao primeiro pixel rolado e fecharia a cortina. Ignora-o.
+          const pt = jornada.congelada ? 0 : s.progress * TOTAL;
           const p = Math.min(N_EST, pt);
           c.setPasso(p);
           const fecha = Math.max(0, Math.min(1, (pt - N_EST) / FECHA));
@@ -139,7 +140,7 @@ export default function BackstageCanvas() {
       const aoRolar = () => {
         clearTimeout(tm);
         tm = setTimeout(() => {
-          if (jornada.navegando || !jornada.st || !jornada.st.isActive) return;
+          if (jornada.navegando || jornada.congelada || !jornada.st || !jornada.st.isActive) return;
           const p = jornada.st.progress * TOTAL;
           // depois da estação 9 encaixa na cortina aberta (9) ou totalmente fechada (TOTAL)
           const alvo = p > N_EST ? (p - N_EST > FECHA / 2 ? TOTAL : N_EST) : Math.round(p);

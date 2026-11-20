@@ -45,8 +45,8 @@ const COR = ["bg-limao", "bg-rosa", "bg-laranja", "bg-azul text-creme", "bg-lima
 
 export default function Contratacao() {
   return (
-    <section id="contato" className="relative px-4 py-24 sm:px-16 md:py-32">
-      <header className="mx-auto mb-16 max-w-3xl text-center">
+    <section id="contato" className="relative px-4 py-16 sm:px-16 md:py-24">
+      <header className="mx-auto mb-10 max-w-3xl md:mb-16 text-center">
         <p className="font-display text-xs font-bold uppercase tracking-[0.35em] text-rosa">A contratação</p>
         <h2 className="mt-3 font-display text-4xl font-extrabold leading-tight md:text-6xl">
           Leve a Bambolina <span className="font-swung font-normal text-limao">para sua escola.</span>
@@ -62,9 +62,7 @@ export default function Contratacao() {
           <article className="ingresso bg-creme p-7 text-vinho shadow-2xl md:p-9">
             <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-vinho/75">Experiência Bambolina</p>
             <p className="mt-2 whitespace-nowrap font-display text-[clamp(2.1rem,4.4vw,3.75rem)] font-extrabold leading-none">{PRECO.valor}</p>
-            <p className="mt-1 text-sm">
-              Valor de referência da proposta comercial {!PRECO.validado && <Placeholder>preço oficial a validar</Placeholder>}
-            </p>
+            <p className="mt-1 text-sm">Valor da proposta comercial</p>
             <p className="mt-6 font-display text-sm font-bold">O que contempla</p>
             <ul className="mt-2 space-y-2 border-t border-dashed border-vinho/40 pt-4">
               {INCLUI.map((t) => (
@@ -108,7 +106,7 @@ export default function Contratacao() {
       </div>
 
       {/* Como contratar */}
-      <div className="mx-auto mt-24 max-w-6xl">
+      <div className="mx-auto mt-16 max-w-6xl md:mt-24">
         <h3 className="text-center font-swung text-4xl md:text-5xl">Como contratar</h3>
         <ol className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {PASSOS.map((p, i) => (
@@ -125,12 +123,12 @@ export default function Contratacao() {
       </div>
 
       {/* FAQ: mural de abas */}
-      <div className="mx-auto mt-28 max-w-6xl">
+      <div className="mx-auto mt-16 max-w-6xl md:mt-24">
         <FaqMural itens={FAQ} />
       </div>
 
       {/* Contato */}
-      <Reveal className="mx-auto mt-24 max-w-5xl">
+      <Reveal className="mx-auto mt-16 max-w-5xl md:mt-20">
         <div className="cortina rounded-3xl px-6 py-14 text-center shadow-2xl md:px-14">
           <h3 className="font-swung text-4xl leading-tight md:text-6xl">O teatro é só o começo.</h3>
           <p className="mx-auto mt-4 max-w-xl text-lg text-creme/90">
@@ -139,13 +137,13 @@ export default function Contratacao() {
           <ul className="mt-9 grid gap-3 text-left sm:grid-cols-2">
             <Canal rotulo="WhatsApp" valor={CONTATO.whatsappExibicao} href={CONTATO.whatsapp && `https://wa.me/${CONTATO.whatsapp}`} marca="inserir telefone / WhatsApp" />
             <Canal rotulo="E-mail" valor={CONTATO.email} href={CONTATO.email && `mailto:${CONTATO.email}`} marca="inserir e-mail comercial" />
-            <Canal rotulo="Instagram" valor={CONTATO.instagram} href={CONTATO.instagram && `https://instagram.com/${CONTATO.instagram.replace("@", "")}`} marca="confirmar perfil (docx cita @bambolina)" />
+            <Canal rotulo="Instagram" valor={CONTATO.instagram} href={CONTATO.instagram && `https://instagram.com/${CONTATO.instagram.replace("@", "")}`} marca="inserir Instagram" />
             <Canal rotulo="Site" valor={CONTATO.site} href={CONTATO.site} marca="inserir endereço do site" />
           </ul>
         </div>
       </Reveal>
 
-      <footer className="mx-auto mt-20 max-w-5xl text-center text-sm text-creme/50">
+      <footer className="mx-auto mt-14 max-w-5xl text-center text-sm text-creme/50">
         <p>Bambolina | O teatro é só o começo.</p>
         <p className="mt-1">Projeto de Design VII, 2026 · Identidade visual: Júlia Morales Vitorino</p>
       </footer>
