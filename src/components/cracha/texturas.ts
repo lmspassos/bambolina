@@ -64,7 +64,7 @@ function arredondado(ctx: CanvasRenderingContext2D, x: number, y: number, w: num
   ctx.roundRect(x, y, w, h, r);
 }
 
-export function desenhaFrente(ctx: CanvasRenderingContext2D, f: Fontes, marcadas: boolean[], im: Imgs | null) {
+export function desenhaFrente(ctx: CanvasRenderingContext2D, f: Fontes, marcadas: boolean[], im: Imgs | null, nome = "") {
   ctx.clearRect(0, 0, CW, CH);
   fundo(ctx);
 
@@ -92,12 +92,17 @@ export function desenhaFrente(ctx: CanvasRenderingContext2D, f: Fontes, marcadas
   ctx.fill();
   ctx.restore();
 
-  // nome e função (placeholders até haver personalização)
+  // nome digitado pelo visitante (vazio = "Seu nome"); até 2 linhas, encolhe para caber antes das formas
+  const palavras = nome.trim().split(/\s+/).filter(Boolean);
+  const linhas = palavras.length === 0 ? ["Seu", "nome"] : palavras.length === 1 ? palavras : [palavras[0], palavras.slice(1).join(" ")];
   ctx.textAlign = "left";
   ctx.fillStyle = "#ffffff";
   ctx.font = `800 70px ${f.display}`;
-  ctx.fillText("Seu", 40, 610);
-  ctx.fillText("nome", 40, 680);
+  const maior = Math.max(...linhas.map((l) => ctx.measureText(l).width));
+  const tam = Math.max(30, Math.min(70, Math.floor((70 * 290) / maior)));
+  ctx.font = `800 ${tam}px ${f.display}`;
+  const y0 = linhas.length === 1 ? 645 : 610;
+  linhas.forEach((l, i) => ctx.fillText(l, 40, y0 + i * 70));
   ctx.fillStyle = "rgba(255,255,255,.8)";
   ctx.font = `500 30px ${f.display}`;
   ctx.fillText("Participante", 40, 735);

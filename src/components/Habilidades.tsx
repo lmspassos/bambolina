@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { HABILIDADES } from "@/data/habilidades";
 import Cracha from "./cracha/Cracha";
 
@@ -8,6 +8,17 @@ const CORES = ["var(--color-limao)", "var(--color-rosa)", "var(--color-laranja)"
 
 export default function Habilidades() {
   const [marcadas, setMarcadas] = useState<Set<number>>(new Set());
+  const [nome, setNome] = useState(""); // fica só no navegador; aparece no crachá
+  const [editaNome, setEditaNome] = useState(false); // easter egg: o campo só aparece ao clicar no ícone
+  const campoNome = useRef<HTMLInputElement>(null);
+  const miolo = useRef<HTMLDivElement>(null);
+  const [recuo, setRecuo] = useState(0); // altura que o campo ocupa: o crachá a desconta para não crescer
+  const [balao, setBalao] = useState(false); // toque (sem hover): mostra o balão "Suas?"
+  const abreNome = (abrir: boolean) => {
+    setEditaNome(abrir);
+    setRecuo(abrir ? (miolo.current?.scrollHeight ?? 0) : 0);
+    if (abrir) setTimeout(() => campoNome.current?.focus(), 250);
+  };
   const total = HABILIDADES.length;
   const algum = marcadas.size > 0;
 
@@ -38,7 +49,47 @@ export default function Habilidades() {
       <div className="relative grid items-stretch gap-8 lg:grid-cols-2 lg:gap-6">
         {/* Esquerda (desktop): checklist em caderno. A coluna junto ao crachá fica livre para ele não cobrir o texto. */}
         <div className="pagina rounded-3xl p-6 shadow-2xl md:p-8 lg:order-1 lg:pr-40">
-          <h3 className="font-swung text-3xl leading-none md:text-4xl">Minhas habilidades</h3>
+          {/* easter egg: ao passar o mouse em "Minhas" surge o balão "Suas?"; clicar nele abre o campo de nome.
+              O crachá recebe a altura do campo (recuo) e não cresce junto com a caixa. */}
+          <h3 className="font-swung text-3xl leading-none md:text-4xl">
+            <span className="group relative inline-block" onClick={() => { setBalao(true); setTimeout(() => setBalao(false), 3500); }}>
+              Minhas
+              <span className={`absolute bottom-full left-0 pb-2 transition duration-200 motion-reduce:transition-none group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 ${balao || editaNome ? "visible translate-y-0 opacity-100" : "invisible translate-y-1 opacity-0"}`}>
+                <button
+                  type="button"
+                  aria-label="Suas? Colocar seu nome no crachá"
+                  aria-expanded={editaNome}
+                  aria-controls="campo-nome"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    abreNome(!editaNome);
+                  }}
+                  className="relative whitespace-nowrap rounded-full bg-limao px-3 py-1 font-display text-xs font-bold leading-none text-palco shadow-md after:absolute after:left-4 after:top-full after:size-0 after:border-x-[5px] after:border-t-[6px] after:border-x-transparent after:border-t-limao hover:bg-rosa focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul"
+                >
+                  Suas?
+                </button>
+              </span>
+            </span>{" "}
+            habilidades
+          </h3>
+          <div id="campo-nome" inert={!editaNome} className={`grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none ${editaNome ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+            <div ref={miolo} className="overflow-hidden">
+              <label className="block pb-1 pt-5">
+                <span className="font-display text-sm font-bold">Seu nome no crachá</span>
+                <input
+                  ref={campoNome}
+                  type="text"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  onKeyDown={(e) => e.key === "Escape" && abreNome(false)}
+                  maxLength={20}
+                  autoComplete="off"
+                  placeholder="Como você quer ser chamado?"
+                  className="mt-1.5 w-full rounded-xl border-2 border-vinho bg-creme px-4 py-2.5 font-display text-base font-bold text-vinho placeholder:font-normal placeholder:text-vinho/50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul lg:max-w-72"
+                />
+              </label>
+            </div>
+          </div>
           <ul className="mt-5 divide-y divide-vinho/15">
             {HABILIDADES.map((h, i) => {
               const marcada = marcadas.has(i);
@@ -85,7 +136,7 @@ export default function Habilidades() {
         </div>
 
         {/* Centro (desktop): o crachá flutua sobre as duas caixas; no celular fica entre elas */}
-        <Cracha marcadas={HABILIDADES.map((_, i) => marcadas.has(i))} />
+        <Cracha marcadas={HABILIDADES.map((_, i) => marcadas.has(i))} nome={nome} recuo={recuo} />
 
         {/* Direita (desktop): pílulas das profissões ligadas ao que foi marcado */}
         <div className="flex flex-col rounded-3xl border border-creme/15 bg-vinho p-6 shadow-2xl md:p-8 lg:order-2 lg:pl-40">

@@ -49,19 +49,21 @@ const CAM_FOV = 30;
 const VIS_H = 2 * CAM_Z * Math.tan((CAM_FOV * Math.PI) / 360);
 const ANCORA_Y = VIS_H / 2 + 0.15; // o cordão nasce logo acima da borda de cima
 
-type Props = { marcadas: boolean[]; onFalha: () => void };
+type Props = { marcadas: boolean[]; nome: string; onFalha: () => void };
 
-export default function CrachaCanvas({ marcadas, onFalha }: Props) {
+export default function CrachaCanvas({ marcadas, nome, onFalha }: Props) {
   const raiz = useRef<HTMLDivElement>(null);
   const swungRef = useRef<HTMLSpanElement>(null);
   const displayRef = useRef<HTMLSpanElement>(null);
   const marcadasRef = useRef(marcadas);
+  const nomeRef = useRef(nome);
   const apiRef = useRef<{ redesenha: () => void; vira: () => void } | null>(null);
 
   useEffect(() => {
     marcadasRef.current = marcadas;
+    nomeRef.current = nome;
     apiRef.current?.redesenha();
-  }, [marcadas]);
+  }, [marcadas, nome]);
 
   useEffect(() => {
     const el = raiz.current!;
@@ -108,7 +110,7 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
     let imgs: Imgs | null = null;
     const redesenha = () => {
       const f = { swung: fam(swungRef), display: fam(displayRef) };
-      desenhaFrente(texF.image.getContext("2d")!, f, marcadasRef.current, imgs);
+      desenhaFrente(texF.image.getContext("2d")!, f, marcadasRef.current, imgs, nomeRef.current);
       desenhaVerso(texV.image.getContext("2d")!, f, imgs);
       texF.needsUpdate = true;
       texV.needsUpdate = true;
