@@ -784,3 +784,88 @@ body::after {
 section[data-fim] [data-jornada] {
   visibility: hidden;
 }
+
+/* Galeria: o cartão de legenda nasce como uma bolinha e se abre */
+.cartao-entra {
+  transform-origin: left center;
+  animation: cartaoEntra 0.55s 0.2s cubic-bezier(0.2, 1.2, 0.3, 1) both;
+}
+@keyframes cartaoEntra {
+  from {
+    opacity: 0;
+    scale: 0.3;
+  }
+}
+.cartao-sai {
+  transform-origin: left center;
+  animation: cartaoSai 0.25s ease-in both;
+}
+@keyframes cartaoSai {
+  to {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cartao-entra,
+  .cartao-sai {
+    animation: none;
+  }
+}
+
+/* Galeria: abrir e fechar o diálogo (fundo some/aparece; o conteúdo sobe e cresce; as miniaturas entram em sequência) */
+@keyframes galFundo {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes galFundoSai {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes galEntra {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.94);
+  }
+}
+@keyframes galSai {
+  to {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+.gal-fundo-entra {
+  animation: galFundo 0.35s ease-out both;
+}
+.gal-fundo-sai {
+  animation: galFundoSai 0.3s ease-in both;
+}
+.gal-entra {
+  animation: galEntra 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.gal-sai {
+  animation: galSai 0.3s ease-in both;
+}
+.gal-item {
+  animation: galEntra 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i) * 28ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .gal-fundo-entra,
+  .gal-fundo-sai,
+  .gal-entra,
+  .gal-sai,
+  .gal-item {
+    animation: none;
+  }
+}
+
+/* Galeria: troca de foto com as setas (a nova desliza para dentro da moldura) */
+@keyframes gal-troca {
+  from { translate: calc(var(--d) * 45%) 0; scale: 1.06; }
+  to { translate: 0 0; scale: 1; }
+}
+.gal-troca { animation: gal-troca 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .gal-troca { animation: none; } }

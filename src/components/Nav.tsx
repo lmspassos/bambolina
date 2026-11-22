@@ -13,6 +13,13 @@ const DOODLES = {
   ),
   estrela: <path d="M24 5l4.5 14.5L43 24l-14.5 4.5L24 43l-4.5-14.5L5 24l14.5-4.5zM38 8c3 1 4 4 3 7" />,
   ingresso: <path d="M5 13h38v7a4 4 0 0 0 0 8v7H5v-7a4 4 0 0 0 0-8zM30 13v4M30 22v4M30 31v4M13 21h9M13 27h6" />,
+  camera: (
+    <>
+      <rect x="5" y="14" width="38" height="25" rx="4" />
+      <path d="M17 14l3-6h8l3 6" />
+      <circle cx="24" cy="26" r="7" />
+    </>
+  ),
   refletor: (
     <>
       <rect x="15" y="4" width="18" height="10" rx="3" />
@@ -25,6 +32,7 @@ const LINKS: { href: string; label: string; doodle: keyof typeof DOODLES }[] = [
   { href: "#inicio", label: "experiência", doodle: "refletor" },
   { href: "#roteiro", label: "roteiro", doodle: "rosto" },
   { href: "#areas", label: "áreas", doodle: "estrela" },
+  { href: "#galeria", label: "galeria", doodle: "camera" },
   { href: "#contato", label: "contratar", doodle: "ingresso" },
 ];
 

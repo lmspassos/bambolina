@@ -44,3 +44,6 @@ next-env.d.ts
 /docs/TCC 2026.pdf
 /docs/Catalogo_Bambolina.docx
 /out
+
+# originais PNG da galeria (52 MB); o site usa public/galeria/*.webp
+/fotos/
