@@ -104,16 +104,6 @@ export function texCanvas(w: number, h: number, desenhar: (c: CanvasRenderingCon
   return t;
 }
 
-export function planoTex(pai: THREE.Object3D, tex: THREE.Texture, w: number, h: number, x: number, y: number, z: number, emissivo = 0) {
-  const mat = new THREE.MeshStandardMaterial({
-    map: tex, roughness: 0.8,
-    ...(emissivo ? { emissive: 0xffffff, emissiveMap: tex, emissiveIntensity: emissivo } : {}),
-  });
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), mat);
-  m.position.set(x, y, z);
-  pai.add(m);
-  return m;
-}
 
 /** Cabo caindo em curva (catenária simples). */
 export function cabo(pai: THREE.Object3D, pts: [number, number, number][], mat: THREE.Material, r = 0.012) {

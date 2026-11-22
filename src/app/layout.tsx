@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import localFont from "next/font/local";
 import "@fontsource/open-sauce-one/400.css";
@@ -25,7 +25,15 @@ export const metadata: Metadata = {
   title: "Bambolina | Teatro além do palco",
   description:
     "Experiência teatral imersiva e interativa que revela aos jovens as possibilidades dentro e fora do palco. Leve a Bambolina para a sua escola.",
+  openGraph: {
+    title: "Bambolina | Teatro além do palco",
+    description: "O teatro é só o começo. Leve a Bambolina para a sua escola.",
+    locale: "pt_BR",
+    type: "website",
+  },
 };
+
+export const viewport: Viewport = { themeColor: "#1d1d1b" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (

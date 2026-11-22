@@ -32,9 +32,10 @@ export default function Nav() {
   const [aberto, setAberto] = useState(false);
   const [pronto, setPronto] = useState(false); // hambúrguer só aparece depois que a cortina do Hero abre
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return setPronto(true); // sem cortina animada
     let t: ReturnType<typeof setTimeout>;
-    const aoAbrir = () => (t = setTimeout(() => setPronto(true), 2000)); // a cortina leva ~2 s para abrir
+    const mostra = (ms: number) => (t = setTimeout(() => setPronto(true), ms));
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) mostra(0); // sem cortina animada
+    const aoAbrir = () => mostra(2000); // a cortina leva ~2 s para abrir
     window.addEventListener("bambolina:cortina", aoAbrir);
     return () => {
       window.removeEventListener("bambolina:cortina", aoAbrir);

@@ -9,7 +9,7 @@ const CORES = ["var(--color-limao)", "var(--color-rosa)", "var(--color-laranja)"
 export default function Habilidades() {
   const [marcadas, setMarcadas] = useState<Set<number>>(new Set());
   const total = HABILIDADES.length;
-  const completo = marcadas.size === total;
+  const algum = marcadas.size > 0;
 
   const alterna = (i: number) =>
     setMarcadas((prev) => {
@@ -33,9 +33,11 @@ export default function Habilidades() {
         </p>
       </header>
 
-      <div className="mx-auto grid max-w-6xl items-start gap-8 md:grid-cols-[1.05fr_1fr]">
-        {/* Checklist (caderno) */}
-        <div className="pagina rounded-3xl p-6 shadow-2xl md:p-8">
+      <div className="mx-auto max-w-6xl">
+      {/* só as duas caixas: o crachá se posiciona em relação a este bloco, então o aviso verde abaixo não muda o tamanho dele */}
+      <div className="relative grid items-stretch gap-8 lg:grid-cols-2 lg:gap-6">
+        {/* Esquerda (desktop): checklist em caderno. A coluna junto ao crachá fica livre para ele não cobrir o texto. */}
+        <div className="pagina rounded-3xl p-6 shadow-2xl md:p-8 lg:order-1 lg:pr-40">
           <h3 className="font-swung text-3xl leading-none md:text-4xl">Minhas habilidades</h3>
           <ul className="mt-5 divide-y divide-vinho/15">
             {HABILIDADES.map((h, i) => {
@@ -82,13 +84,15 @@ export default function Habilidades() {
           </div>
         </div>
 
-        {/* Cena que se monta + profissões */}
-        <div className="grid gap-6">
-          <Cracha marcadas={HABILIDADES.map((_, i) => marcadas.has(i))} />
+        {/* Centro (desktop): o crachá flutua sobre as duas caixas; no celular fica entre elas */}
+        <Cracha marcadas={HABILIDADES.map((_, i) => marcadas.has(i))} />
 
+        {/* Direita (desktop): pílulas das profissões ligadas ao que foi marcado */}
+        <div className="flex flex-col rounded-3xl border border-creme/15 bg-vinho p-6 shadow-2xl md:p-8 lg:order-2 lg:pl-40">
           <div>
-            <p className="font-display text-xs font-bold uppercase tracking-[0.3em] text-creme/60">Onde isso aparece</p>
-            <ul className="mt-3 flex min-h-12 flex-wrap gap-2">
+            <h3 className="font-swung text-3xl leading-none md:text-4xl">Onde isso aparece</h3>
+            <p className="mt-2 text-sm text-creme/70">No teatro e fora dele.</p>
+            <ul className="mt-5 flex min-h-12 flex-wrap gap-2">
               {profissoes.length === 0 && <li className="text-creme/50">As profissões ligadas às suas habilidades aparecem aqui.</li>}
               {profissoes.map((p, i) => (
                 <li
@@ -102,16 +106,29 @@ export default function Habilidades() {
             </ul>
           </div>
 
-          {completo && (
-            <div className="rounded-2xl bg-limao p-5 text-palco">
-              <p className="font-swung text-2xl leading-tight">Nenhum espetáculo acontece sozinho.</p>
-              <p className="mt-1 text-sm">Cada pessoa contribui de um jeito, e o resultado depende de todos os talentos juntos.</p>
-              <a href="#contato" className="mt-3 inline-block rounded-full bg-palco px-5 py-2 font-display text-sm font-bold text-limao transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-palco">
-                Leve essa experiência para sua escola
-              </a>
-            </div>
-          )}
         </div>
+      </div>
+
+      {/* Aviso: aparece já na 1ª habilidade marcada (some se desmarcar tudo). Abaixo das duas caixas, largura total. */}
+      <div
+        inert={!algum}
+        aria-hidden={!algum}
+        className={`grid transition-[grid-template-rows,opacity,margin] duration-500 ease-out motion-reduce:transition-none ${algum ? "mt-6 grid-rows-[1fr] opacity-100" : "mt-0 grid-rows-[0fr] opacity-0"}`}
+      >
+        <div className="overflow-hidden">
+          <div
+            className={`flex flex-col gap-4 rounded-3xl bg-limao p-6 text-palco transition-transform duration-500 ease-out motion-reduce:transition-none md:flex-row md:items-center md:justify-between md:p-8 ${algum ? "translate-y-0 scale-100" : "translate-y-6 scale-95"}`}
+          >
+            <div>
+              <p className="font-swung text-3xl leading-tight md:text-4xl">Nenhum espetáculo acontece sozinho.</p>
+              <p className="mt-1 max-w-xl text-sm md:text-base">Cada pessoa contribui de um jeito, e o resultado depende de todos os talentos juntos.</p>
+            </div>
+            <a href="#contato" className="shrink-0 self-start rounded-full bg-palco px-6 py-3 font-display text-sm font-bold text-limao transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-palco motion-reduce:transition-none md:self-auto">
+              Leve essa experiência para sua escola
+            </a>
+          </div>
+        </div>
+      </div>
       </div>
 
       <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-creme/60">

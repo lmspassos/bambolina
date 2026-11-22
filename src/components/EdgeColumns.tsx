@@ -86,7 +86,8 @@ export default function EdgeColumns() {
     if (t && b) {
       const r = t.getBoundingClientRect();
       b.style.top = `${r.top + r.height / 2}px`;
-      b.dataset.lado === "left" ? (b.style.left = `${r.right + 10}px`) : (b.style.right = `${window.innerWidth - r.left + 10}px`);
+      if (b.dataset.lado === "left") b.style.left = `${r.right + 10}px`;
+      else b.style.right = `${window.innerWidth - r.left + 10}px`;
       raf.current = requestAnimationFrame(seguir);
     }
   };

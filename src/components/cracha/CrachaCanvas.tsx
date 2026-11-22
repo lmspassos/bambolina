@@ -38,16 +38,16 @@ const SLOT_H = 0.09;
 const D = H - SLOT_Y - 0.3; // vara rígida furo → ponto pesado (perto da borda de baixo)
 
 // Cordão
-const ANCORA_Y = 2.55;
 const N = 7; // segmentos do cordão
-const SEG = 1.3 / N;
+const SEG = 0.7 / N; // cordão curto: nasce na borda de cima das caixas e o cartão fica no meio
 const G = 26;
 const DT = 1 / 60;
 
-// Câmera: altura visível fixa (≈4,82) para o cartão ter o mesmo tamanho em qualquer proporção.
-const CAM_Z = 8;
+// Câmera: altura visível fixa (≈4) para o cartão ter o mesmo tamanho em qualquer proporção.
+const CAM_Z = 6.6;
 const CAM_FOV = 30;
 const VIS_H = 2 * CAM_Z * Math.tan((CAM_FOV * Math.PI) / 360);
+const ANCORA_Y = VIS_H / 2 + 0.15; // o cordão nasce logo acima da borda de cima
 
 type Props = { marcadas: boolean[]; onFalha: () => void };
 
@@ -76,7 +76,7 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
     }
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
     renderer.setPixelRatio(dpr);
-    renderer.domElement.className = "size-full block";
+    renderer.domElement.className = "size-full block lg:[filter:drop-shadow(0_18px_26px_rgba(0,0,0,.55))]";
     renderer.domElement.setAttribute("aria-hidden", "true");
     el.appendChild(renderer.domElement);
 
@@ -249,13 +249,13 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
 
     const vira = () => {
       alvoYaw += Math.PI;
-      if (reduzido) { yaw = alvoYaw; }
-      quadro();
+      if (reduzido) { yaw = alvoYaw; quadro(); } else acorda();
     };
 
     // ---------- desenho ----------
+    // a curva guarda referências aos mesmos Vector3 de pos (atualizados no lugar), então não precisa recriar
     const curva = new CatmullRomCurve3(pos.slice(0, N + 1), false, "catmullrom", 0.5);
-    const tmp = new Vector3();
+    const amostra = Array.from({ length: AM + 1 }, () => new Vector3());
     const atualizaVisual = () => {
       const P = pos[N], Q = pos[N + 1];
       const theta = Math.atan2(Q.x - P.x, -(Q.y - P.y));
@@ -265,16 +265,15 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
       const vx = Q.x - ant[N + 1].x;
       giro.rotation.set(tiltX, yaw + tiltY + Math.max(-0.5, Math.min(0.5, vx * 3)), 0);
 
-      curva.points = pos.slice(0, N + 1);
+      for (let i = 0; i <= AM; i++) curva.getPoint(i / AM, amostra[i]);
       for (let i = 0; i <= AM; i++) {
-        const u = i / AM;
-        curva.getPoint(u, tmp);
-        const t2 = curva.getPoint(Math.min(1, u + 0.01), new Vector3()).sub(curva.getPoint(Math.max(0, u - 0.01), new Vector3()));
-        const l = Math.hypot(t2.x, t2.y) || 1;
-        const nx = -t2.y / l, ny = t2.x / l;
+        const p = amostra[i], a = amostra[Math.max(0, i - 1)], b = amostra[Math.min(AM, i + 1)];
+        const tx = b.x - a.x, ty = b.y - a.y;
+        const l = Math.hypot(tx, ty) || 1;
+        const nx = -ty / l, ny = tx / l;
         const w = 0.045;
-        posAttr.setXYZ(i * 2, tmp.x + nx * w, tmp.y + ny * w, -0.03);
-        posAttr.setXYZ(i * 2 + 1, tmp.x - nx * w, tmp.y - ny * w, -0.03);
+        posAttr.setXYZ(i * 2, p.x + nx * w, p.y + ny * w, -0.03);
+        posAttr.setXYZ(i * 2 + 1, p.x - nx * w, p.y - ny * w, -0.03);
       }
       posAttr.needsUpdate = true;
     };
@@ -319,25 +318,33 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
     const mundo = new Vector3();
     let sobre = false;
 
+    // O canvas fica com pointer-events:none (deixa passar cliques para o que está embaixo, como as caixas
+    // da seção); os eventos vêm da janela, e o canvas só "pega" o ponteiro enquanto ele está sobre o cartão.
+    const sobreCartao = (e: PointerEvent) => visivel && acerta(alvoMundo(e.clientX, e.clientY, mundo)) >= 0;
+    const marca = (sobre_: boolean) => {
+      sobre = sobre_;
+      el.style.pointerEvents = sobre_ ? "auto" : "none";
+      el.style.cursor = arrasto.ativo ? "grabbing" : sobre_ ? "grab" : "";
+    };
+
     const aoMover = (e: PointerEvent) => {
-      alvoMundo(e.clientX, e.clientY, mundo);
       if (arrasto.ativo) {
-        arrasto.alvo.copy(mundo);
+        alvoMundo(e.clientX, e.clientY, arrasto.alvo);
         if (Math.hypot(e.clientX - arrasto.x0, e.clientY - arrasto.y0) > 4) arrasto.moveu = true;
         return;
       }
-      const t = acerta(mundo);
-      sobre = t >= 0;
-      el.style.cursor = sobre ? "grab" : "";
-      if (sobre && e.pointerType === "mouse") {
+      if (e.pointerType === "touch") return;
+      const dentro = sobreCartao(e);
+      if (dentro !== sobre) marca(dentro);
+      if (dentro && e.pointerType === "mouse") {
         const P = pos[N];
         alvoTX = Math.max(-0.3, Math.min(0.3, (P.y - 0.4 - mundo.y) * 0.1));
         alvoTY = Math.max(-0.3, Math.min(0.3, (mundo.x - P.x) * 0.25));
       } else { alvoTX = 0; alvoTY = 0; }
-      quadro();
+      if (reduzido) quadro(); else acorda();
     };
     const aoDescer = (e: PointerEvent) => {
-      if (reduzido || e.button > 0) return;
+      if (reduzido || e.button > 0 || !visivel) return;
       alvoMundo(e.clientX, e.clientY, mundo);
       const t = acerta(mundo);
       if (t < 0) return;
@@ -345,23 +352,27 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
       arrasto.t = Math.min(1.2, t);
       arrasto.alvo.copy(mundo);
       arrasto.x0 = e.clientX; arrasto.y0 = e.clientY; arrasto.t0 = performance.now();
-      el.setPointerCapture(e.pointerId);
-      el.style.cursor = "grabbing";
+      try { el.setPointerCapture(e.pointerId); } catch { /* toque: o alvo original segue recebendo */ }
+      document.body.style.userSelect = "none";
+      marca(true);
+      acorda();
       e.preventDefault();
     };
     const aoSoltar = (e: PointerEvent) => {
       if (!arrasto.ativo) return;
       arrasto.ativo = false;
-      el.releasePointerCapture(e.pointerId);
-      el.style.cursor = sobre ? "grab" : "";
+      document.body.style.userSelect = "";
+      try { el.releasePointerCapture(e.pointerId); } catch { /* sem captura */ }
+      marca(e.pointerType !== "touch" && sobreCartao(e));
       // clique sem arrastar vira o cartão (e não dispara logo após um arraste)
       if (!arrasto.moveu && performance.now() - arrasto.t0 < 500) vira();
+      acorda();
     };
-    const aoSair = () => { sobre = false; alvoTX = 0; alvoTY = 0; if (!arrasto.ativo) el.style.cursor = ""; };
+    const aoSair = () => { if (!arrasto.ativo) { marca(false); alvoTX = 0; alvoTY = 0; acorda(); } };
     // no toque, só impede a rolagem da página quando o dedo começa em cima do cartão
     const aoTocar = (e: TouchEvent) => {
       const t = e.touches[0];
-      if (!reduzido && acerta(alvoMundo(t.clientX, t.clientY, new Vector3())) >= 0) e.preventDefault();
+      if (!reduzido && visivel && acerta(alvoMundo(t.clientX, t.clientY, new Vector3())) >= 0) e.preventDefault();
     };
     const aoTecla = (e: KeyboardEvent) => {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); vira(); return; }
@@ -369,18 +380,19 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
       if (!dir || reduzido) return;
       e.preventDefault();
       ant[N + 1].x -= dir * 0.025; ant[N].x -= dir * 0.012;
+      acorda();
     };
-    el.addEventListener("pointermove", aoMover);
-    el.addEventListener("pointerdown", aoDescer);
-    el.addEventListener("pointerup", aoSoltar);
-    el.addEventListener("pointercancel", aoSoltar);
-    el.addEventListener("pointerleave", aoSair);
-    el.addEventListener("touchstart", aoTocar, { passive: false });
+    window.addEventListener("pointermove", aoMover);
+    window.addEventListener("pointerdown", aoDescer, true);
+    window.addEventListener("pointerup", aoSoltar);
+    window.addEventListener("pointercancel", aoSoltar);
+    document.documentElement.addEventListener("pointerleave", aoSair);
+    window.addEventListener("touchstart", aoTocar, { passive: false, capture: true });
     el.addEventListener("keydown", aoTecla);
 
     // ---------- laço ----------
     let raf = 0, visivel = true, aba = !document.hidden, ultimo = 0, acum = 0;
-    let soma = 0, cont = 0;
+    let soma = 0, cont = 0, calmo = 0;
     const laco = (agora: number) => {
       raf = 0;
       if (!visivel || !aba) return;
@@ -388,12 +400,18 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
       ultimo = agora;
       acum += dt;
       while (acum >= DT) { passo(); acum -= DT; }
+      let mov = 0;
+      for (let i = 1; i <= N + 1; i++) mov = Math.max(mov, Math.hypot(pos[i].x - ant[i].x, pos[i].y - ant[i].y));
       // giro com mola
       yawV += ((alvoYaw - yaw) * 70 - yawV * 10) * dt;
       yaw += yawV * dt;
       tiltX += (alvoTX - tiltX) * Math.min(1, dt * 10);
       tiltY += (alvoTY - tiltY) * Math.min(1, dt * 10);
       quadro();
+      // tudo parado por ~1 s: dorme (sem gastar GPU/CPU) até um evento acordar
+      const parado = !arrasto.ativo && mov < 1e-4 && Math.abs(alvoYaw - yaw) < 2e-3 && Math.abs(yawV) < 2e-2 && Math.abs(alvoTX - tiltX) < 1e-3 && Math.abs(alvoTY - tiltY) < 1e-3;
+      calmo = parado ? calmo + 1 : 0;
+      if (calmo > 60) { calmo = 0; return; }
       // se o quadro ficar caro, baixa a resolução (2 → 1,5 → 1)
       soma += dt; cont++;
       if (cont === 90) {
@@ -405,6 +423,8 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
     const acorda = () => {
       if (reduzido || raf || !visivel || !aba) return;
       ultimo = performance.now();
+      acum = 0;
+      calmo = 0;
       raf = requestAnimationFrame(laco);
     };
     const io = new IntersectionObserver(([en]) => { visivel = en.isIntersecting; acorda(); }, { rootMargin: "120px" });
@@ -426,13 +446,14 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
       cancelAnimationFrame(raf);
       io.disconnect(); ro.disconnect();
       document.removeEventListener("visibilitychange", aoAba);
-      el.removeEventListener("pointermove", aoMover);
-      el.removeEventListener("pointerdown", aoDescer);
-      el.removeEventListener("pointerup", aoSoltar);
-      el.removeEventListener("pointercancel", aoSoltar);
-      el.removeEventListener("pointerleave", aoSair);
-      el.removeEventListener("touchstart", aoTocar);
+      window.removeEventListener("pointermove", aoMover);
+      window.removeEventListener("pointerdown", aoDescer, true);
+      window.removeEventListener("pointerup", aoSoltar);
+      window.removeEventListener("pointercancel", aoSoltar);
+      document.documentElement.removeEventListener("pointerleave", aoSair);
+      window.removeEventListener("touchstart", aoTocar, true);
       el.removeEventListener("keydown", aoTecla);
+      document.body.style.userSelect = "";
       [gCorpo, gFace, gBarra, gArgola, gCordao].forEach((g) => g.dispose());
       [mCorpo, mFrente, mVerso, mMetal, cordao.material as MeshBasicMaterial].forEach((m) => m.dispose());
       texF.dispose(); texV.dispose();
@@ -449,7 +470,7 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
         tabIndex={0}
         role="group"
         aria-label="Crachá interativo da Bambolina. Arraste para balançar; Enter vira o crachá; setas esquerda e direita dão um empurrão."
-        className="absolute inset-0 select-none focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-azul"
+        className="pointer-events-none absolute inset-0 select-none focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-azul"
       >
         {/* fontes lidas do CSS (next/font gera o nome da família) */}
         <span ref={swungRef} aria-hidden className="font-swung pointer-events-none absolute opacity-0">.</span>
@@ -458,7 +479,7 @@ export default function CrachaCanvas({ marcadas, onFalha }: Props) {
       <button
         type="button"
         onClick={() => apiRef.current?.vira()}
-        className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-creme/90 px-4 py-1.5 font-display text-xs font-bold text-vinho transition hover:bg-limao focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul"
+        className="pointer-events-auto absolute bottom-3 lg:bottom-32 left-1/2 -translate-x-1/2 rounded-full bg-creme/90 px-4 py-1.5 font-display text-xs font-bold text-vinho transition hover:bg-limao focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-azul"
       >
         virar crachá
       </button>

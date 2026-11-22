@@ -19,8 +19,8 @@ export default function HeroBackstage() {
       <HeroJornada />
       {/* Cortina que se fecha ao fim da estação 9 (progresso em --fecha, definido pelo pin do Hero) */}
       <div aria-hidden className="pointer-events-none absolute inset-0 z-40 overflow-hidden">
-        <div className="cortina cortina-fim absolute inset-y-0 left-0 w-[50.5%] [transform:translateX(calc(-100%*(1-var(--fecha,0))))]" />
-        <div className="cortina cortina-fim absolute inset-y-0 right-0 w-[50.5%] [transform:translateX(calc(100%*(1-var(--fecha,0))))]" />
+        <div className="cortina absolute inset-y-0 left-0 w-[50.5%] [transform:translateX(calc(-100%*(1-var(--fecha,0))))]" />
+        <div className="cortina absolute inset-y-0 right-0 w-[50.5%] [transform:translateX(calc(100%*(1-var(--fecha,0))))]" />
       </div>
     </>
   );
