@@ -99,7 +99,6 @@ export default function Contratacao() {
               <Condicao titulo="Pagamento" valor="50% para reservar a data e 50% antes da realização." />
               <Condicao titulo="Cancelamento e remarcação" valor={CONDICOES.cancelamento} marca="definir política de cancelamento" />
               <Condicao titulo="Grupos com mais de 30 estudantes" valor={CONDICOES.gruposMaiores} marca="definir preço ou divisão em sessões" />
-              <Condicao titulo="Deslocamento e área de atendimento" valor={CONDICOES.areaAtendimento} marca="definir área de atendimento" />
             </dl>
           </div>
         </Reveal>
@@ -138,7 +137,7 @@ export default function Contratacao() {
             <Canal rotulo="WhatsApp" valor={CONTATO.whatsappExibicao} href={CONTATO.whatsapp && `https://wa.me/${CONTATO.whatsapp}`} marca="inserir telefone / WhatsApp" />
             <Canal rotulo="E-mail" valor={CONTATO.email} href={CONTATO.email && `mailto:${CONTATO.email}`} marca="inserir e-mail comercial" />
             <Canal rotulo="Instagram" valor={CONTATO.instagram} href={CONTATO.instagram && `https://instagram.com/${CONTATO.instagram.replace("@", "")}`} marca="inserir Instagram" />
-            <Canal rotulo="Site" valor={CONTATO.site} href={CONTATO.site} marca="inserir endereço do site" />
+            <Canal rotulo="Site" valor={CONTATO.site && CONTATO.site.replace(/^https?:\/\//, "")} href={CONTATO.site} marca="inserir endereço do site" />
           </ul>
         </div>
       </Reveal>

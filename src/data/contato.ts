@@ -2,18 +2,18 @@
 // `null` = ainda não definido: o site mostra um marcador vermelho tracejado "⚠ [...]" no lugar.
 // Para publicar, troque cada `null` pelo valor real (e procure `data-placeholder` no site para ver o que sobrou).
 export const CONTATO = {
-  email: null as string | null, // ex.: "contato@..."
-  whatsapp: null as string | null, // somente dígitos com DDI, ex.: "5541999999999"
-  whatsappExibicao: null as string | null, // ex.: "(41) 99999-9999"
-  site: null as string | null, // ex.: "https://..."
-  instagram: "@bambolina" as string | null, // conforme o catálogo (docx)
+  // DADOS DE MARCAÇÃO (fictícios, para o TCC): trocar pelos reais antes de publicar.
+  email: "projeto@bambolina.com.br" as string | null,
+  whatsapp: "5541999999999" as string | null, // somente dígitos com DDI
+  whatsappExibicao: "(41) 99999-9999" as string | null,
+  site: "https://bambolina.com.br" as string | null,
+  instagram: "@bambolina" as string | null,
 };
 
 // Preço oficial da proposta: R$ 3.500,00 (catálogo).
 export const PRECO = { valor: "R$ 3.500,00" };
 
 export const CONDICOES = {
-  cancelamento: null as string | null, // política de cancelamento e remarcação
-  gruposMaiores: null as string | null, // preço/regra para mais de 30 estudantes
-  areaAtendimento: null as string | null, // deslocamento e área de atendimento
+  cancelamento: "Cancelamentos e remarcações devem ser comunicados com pelo menos 1 mês de antecedência, para não comprometer as preparações do evento." as string | null,
+  gruposMaiores: "Grupos com mais de 30 estudantes serão divididos em seções." as string | null,
 };
