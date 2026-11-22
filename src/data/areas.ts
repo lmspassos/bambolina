@@ -18,7 +18,7 @@ const LIGHT = "var(--color-creme)";
 
 export const AREAS: Area[] = [
   { area: "Iluminação", estacao: "Luz em Cena", desc: "Descubra como a luz transforma ambientes, cria atmosferas e direciona o olhar do público.", shape: "iluminacao", bg: "var(--color-limao)", fg: "var(--color-azul)", ink: DARK },
-  { area: "Sonoplastia", estacao: "Som da Cena", desc: "Explore os sons, efeitos e trilhas que ajudam a construir emoções e contar histórias.", shape: "sonoplastia", bg: "var(--color-laranja)", fg: "var(--color-vinho)", ink: DARK },
+  { area: "Sonoplastia", estacao: "Som da Cena", desc: "Explore os sons, efeitos e trilhas que ajudam a construir emoções e contar histórias.", shape: "sonoplastia", bg: "var(--color-limao)", fg: "var(--color-vinho)", ink: DARK },
   { area: "Cenografia", estacao: "Mundo em Cena", desc: "Conheça como espaços, objetos e elementos visuais dão forma ao universo de uma apresentação.", shape: "cenografia", bg: "var(--color-azul)", fg: "var(--color-creme)", ink: "#ffffff" },
   { area: "Figurino", estacao: "Vestindo Personagens", desc: "Descubra como roupas, cores e materiais ajudam a construir a identidade de personagens.", shape: "cenografia", bg: "var(--color-rosa)", fg: "var(--color-palco)", ink: DARK },
   { area: "Maquiagem", estacao: "Cara de Personagem", desc: "Experimente como a maquiagem pode transformar aparências e contribuir para a caracterização.", shape: "iluminacao", bg: "var(--color-creme)", fg: "var(--color-rosa)", ink: DARK },

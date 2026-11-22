@@ -41,7 +41,7 @@ Legenda: ✅ está · 🟡 parcial · ❌ não está.
 
 ## 2. Identidade visual: o que poderia ser melhor aplicado
 
-1. **Cor por área** (sinalização, pág. 106–108): Figurino = rosa, Cenografia = azul, **Sonoplastia = amarelo**. No site Sonoplastia está em laranja (`areas.ts`). Alinhar, e definir as outras 6 com a mesma lógica.
+1. **Cor por área** (sinalização, pág. 106–108): Figurino = rosa, Cenografia = azul, Sonoplastia = amarelo. ✅ Sonoplastia corrigida para limão em `areas.ts` (21/11/2026); as outras 6 áreas não têm cor definida no TCC.
 2. **Logo em outras cores:** só o rosa é usado. Os SVGs amarelo/azul/laranja já existem em `public/brand/logo/` (reduzida e completa) e a identidade manda trocar conforme a seção. Faltam positivo/negativo e as variações vertical/super horizontal (pedir à Júlia).
 3. **Halftone (retícula de pontos):** é textura recorrente nas peças (amarelo/branco) e **não aparece** no site. Entra bem em fundos de seção, no Hero e na faixa dos cards.
 4. **Pílulas inclinadas com rótulo** ("Explore", "Experimente", "SPOILER:") e **selos serrilhados**: hoje só as notas do livro fazem isso. Usar nos títulos de seção e CTAs.
